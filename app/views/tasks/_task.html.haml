@@ -1,0 +1,5 @@
+%li
+  = task.name
+  - if task.subtasks.size > 0
+    %ul
+      = render task.subtasks

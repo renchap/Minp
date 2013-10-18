@@ -14,3 +14,6 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+//= require d3-3.3.8.min
+//= require twitter/bootstrap
