@@ -11,6 +11,7 @@ class ProjectsController < ApplicationController
       format.json do
         struct = {
           :name => @project.name,
+          :type => 'project',
           :children => @project.tasks_array
         }
         render json: struct

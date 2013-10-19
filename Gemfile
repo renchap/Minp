@@ -33,6 +33,7 @@ gem 'redis'
 gem 'tubesock'
 gem 'puma'
 gem 'haml-rails'
+gem 'color-generator'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.

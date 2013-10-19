@@ -14,7 +14,10 @@ class Project < ActiveRecord::Base
   private
   def array_task_item(task)
     {
+      'taskId' => task.id,
+      'color' => task.color,
       'name' => task.name,
+      'type' => "task",
       'children' => task.subtasks.map { |s| array_task_item(s) }
     }
   end

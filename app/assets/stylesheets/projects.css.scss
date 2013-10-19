@@ -10,6 +10,12 @@
   stroke-width: 1.5px;
 }
 
+.node > .add {
+  text {
+    color: steelblue;
+  }
+}
+
 .node text {
   font-size: 11px;
 }
@@ -17,5 +23,5 @@
 path.link {
   fill: none;
   stroke: #ccc;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
 }
