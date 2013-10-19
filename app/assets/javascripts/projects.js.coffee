@@ -9,7 +9,7 @@ $( ->
     
     # Normalize for fixed-depth.
     nodes.forEach (d) ->
-      d.y = d.depth * 180
+      d.y = d.depth * 120
   
     
     # Update the nodes…
@@ -97,9 +97,9 @@ $( ->
     else
       d.children = d._children
       d._children = null
-  m = [20, 120, 20, 120]
-  w = 800 - m[1] - m[3]
-  h = 600 - m[0] - m[2]
+  m = [80, 20, 20, 20]
+  w = $(window).width() - m[1] - m[3]
+  h = $(window).height() - m[0] - m[2]
   i = 0
   root = undefined
   tree = d3.layout.tree().size([h, w])
@@ -107,12 +107,26 @@ $( ->
     [d.y, d.x]
   )
 
-  vis = d3.select('.project-graph')
+  outer = d3.select('.project-graph')
     .append("svg:svg")
-    .attr("width", w + m[1] + m[3])
-    .attr("height", h + m[0] + m[2])
-    .append("svg:g")
-    .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+    .attr("width", w)
+    .attr("height", h)
+    .attr("pointer-events", "all")
+
+  rescale = ->
+    console.log 'toto'
+    vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+ 
+    #let's rescale/reposition rectangle that using for dragging
+    scale = 1 / d3.event.scale;
+    vis.selectAll('rect')
+      .attr("transform", "translate(" + [-1 * (scale * d3.event.translate[0]), -1 * (scale * d3.event.translate[1])] + ")" + " scale(" + scale + ")");
+
+
+  vis = outer.append("svg:g")
+    .call(d3.behavior.zoom().on("zoom", rescale))
+    .append('svg:g')
+ 
   d3.json $('.project-graph').data('source'), (json) ->
     toggleAll = (d) ->
       if d.children
