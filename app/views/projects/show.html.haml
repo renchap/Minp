@@ -1,3 +1,2 @@
 %h1= @project.name
-%ul
-  = render @root_tasks
+.project-graph{:data => {'source' => url_for(action: :show, format: :json)}}

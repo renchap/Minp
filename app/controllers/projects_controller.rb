@@ -5,6 +5,16 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.where(id: params[:id]).first
-    @root_tasks = @project.tasks.where(parent_id: nil)
+
+    respond_to do |format|
+      format.html
+      format.json do
+        struct = {
+          :name => @project.name,
+          :children => @project.tasks_array
+        }
+        render json: struct
+      end
+    end
   end
 end
