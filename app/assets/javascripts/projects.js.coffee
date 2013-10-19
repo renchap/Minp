@@ -33,7 +33,11 @@ $( ->
       .style("visibility", (d) -> "hidden" if d.type == "project")
       .attr("id", (d) -> "task-" + d.taskId)
       .attr("transform", (d) ->
-          "translate(" + source.y0 + "," + source.x0 + ")"
+          if source.y0 == source.y
+            y = source.rightPoint()
+          else
+            y = source.y0
+          "translate(" + y + "," + source.x0 + ")"
         )
       .on("click", (d) ->
         toggle d
@@ -114,9 +118,14 @@ $( ->
       .style("fill-opacity", 1)
     
     # Transition exiting nodes to the parent's new position.
-    nodeExit = node.exit().transition().duration(duration).attr("transform", (d) ->
-      "translate(" + source.y + "," + source.x + ")"
-    ).remove()
+    nodeExit = node.exit()
+      .transition()
+      .duration(duration)
+      .attr("transform", (d) ->
+        "translate(" + source.rightPoint() + "," + source.x + ")"
+      )
+      .remove()
+
     nodeExit.select("circle").attr "r", 1e-6
     nodeExit.select("text").style "fill-opacity", 1e-6
     
@@ -134,7 +143,7 @@ $( ->
       .attr("d", (d) ->
         o =
           x: source.x0
-          y: source.y0
+          y: source.rightPoint()
 
         diagonal
           source: o
@@ -148,7 +157,7 @@ $( ->
     link.exit().transition().duration(duration).attr("d", (d) ->
       o =
         x: source.x
-        y: source.y
+        y: source.rightPoint()
   
       diagonal
         source: o
