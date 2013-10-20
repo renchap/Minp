@@ -1,2 +1,3 @@
-%h1= @project.name
+- set_layout_type :fullscreen
+- set_page_title @project.name
 .project-graph{:data => {'source' => url_for(action: :show, format: :json)}}
