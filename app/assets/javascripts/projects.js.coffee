@@ -85,18 +85,7 @@ $( ->
       .attr("y", 4.5*0.85)
 
     g.on("click", (d) ->
-      newNode = {
-        name: "Click",
-        id: ++maxi,
-        color: d.color,
-        taskId: maxi
-      }
-      if d.children?
-        d.children.push newNode
-      else
-        d.children = [ newNode ]
-      update(d)
-      toggle d
+      newNode( d, { name: "Click", color: d.color, taskId: maxi } )
     )
 
     # Transition nodes to their new position.
@@ -199,6 +188,15 @@ $( ->
       target: d.target
     }
 
+  newNode = (parent, node) ->
+    node.id = ++maxi
+    if parent.children?
+      parent.children.push node
+    else
+      parent.children = [ node ]
+    update parent
+    toggle parent
+
   rescale = ->
     vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
 
@@ -231,4 +229,11 @@ $( ->
       root.x0 = h / 2
       root.y0 = 0
       update root
+
+  socket = new WebSocket "ws://#{window.location.host}/projects/4/stream"
+
+  socket.onmessage = (event) ->
+    if event.data.length
+      task = JSON.parse(event.data)
+      newNode(d3.select('#task-' + task.parent).datum(), task)
 )
