@@ -229,7 +229,7 @@ $( ->
       root.y0 = 0
       update root
 
-  socket = new WebSocket "ws://#{window.location.host}/projects/4/stream"
+  socket = new WebSocket "ws://#{window.location.host + $('.project-graph').data('ws-path')}"
 
   socket.onmessage = (event) ->
     if event.data.length
