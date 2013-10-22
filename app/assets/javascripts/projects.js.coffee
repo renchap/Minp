@@ -1,12 +1,11 @@
 $( ->
 
-  m = [80, 20, 20, 20]
+  m = [60, 0, 30, 0]
   w = $(window).width() - m[1] - m[3]
   h = $(window).height() - m[0] - m[2]
   maxi = 0
 
   # From http://mbostock.github.io/d3/talk/20111018/tree.html
-  # Initialize the display to show a few nodes.
   update = (source) ->
     duration = (if d3.event and d3.event.altKey then 5000 else 500)
     
@@ -15,7 +14,7 @@ $( ->
     
     # Normalize for fixed-depth.
     nodes.forEach (d) ->
-      d.y = d.depth * 200 - 20
+      d.y = d.depth * 200 - 50
       $.extend(d,
         rightPoint : () -> d.y + d.rightOffset(),
         rightOffset: () -> d3.select("#task-" + d.taskId).select('text.label').node().getComputedTextLength() + 17
@@ -197,7 +196,7 @@ $( ->
     update parent
     toggle parent
 
-  rescale = ->
+  rescaleGraph = ->
     vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
 
     #let's rescale/reposition rectangle that using for dragging
@@ -214,7 +213,7 @@ $( ->
       .call(
         d3.behavior.zoom()
         .scaleExtent([0.7, 2])
-        .on("zoom", rescale)
+        .on("zoom", rescaleGraph)
       ).on("dblclick.zoom", null)
 
     vis = outer.append("svg:g")
