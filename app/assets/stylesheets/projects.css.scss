@@ -3,21 +3,41 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
-.node circle {
-  cursor: pointer;
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node > .add {
-  text {
-    color: steelblue;
+.node {
+  circle {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
   }
-}
 
-.node text {
-  font-size: 11px;
+  &> .add {
+    text {
+      color: steelblue;
+    }
+  }
+
+  text {
+    font-size: 11px;
+  }
+
+  .text-container {
+
+    input:focus {
+      border: 0;
+    }
+
+    input[type=text] {
+      border: 0;
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      font-size: 11px;
+      height: 11px;
+      line-height: 11px;
+      outline: none;
+    }
+  }
 }
 
 path.link {

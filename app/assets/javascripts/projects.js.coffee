@@ -17,7 +17,7 @@ $( ->
       d.y = d.depth * 200 - 50
       $.extend(d,
         rightPoint : () -> d.y + d.rightOffset(),
-        rightOffset: () -> d3.select("#task-" + d.taskId).select('text.label').node().getComputedTextLength() + 17
+        rightOffset: () -> d3.select("#task-" + d.taskId).select('text.task-label').node().getComputedTextLength() + 17
       )
   
     # Update the nodes…
@@ -59,13 +59,37 @@ $( ->
       .style("stroke", (d) -> d.color)
 
     nodeEnter
+      .append("svg:g")
+      .attr("class", "text-container")
       .append("svg:text")
-      .attr("class", "label")
+      .attr("class", "task-label")
       .attr("x", 10)
       .attr("dy", ".35em")
       .attr("text-anchor", "start")
       .text( (d) -> d.name )
       .style("fill-opacity", 1)
+      .on("dblclick", (d) ->
+        tRect = this.getBBox()
+
+        text = d3.select(this)
+        text.style("display", "none")
+        container = d3.select(this.parentNode).insert("foreignObject")
+          .attr("width", tRect.width*2)
+          .attr("height", tRect.height*2)
+          .attr("x", tRect.x)
+          .attr("y", tRect.y)
+
+        container
+          .append("xhtml:input")
+          .attr("type", "text")
+          .attr("value", this.textContent)
+          .on("blur", ->
+            text.text(this.value)
+            text.style("display", "block")
+            container.remove()
+          )
+          .node().focus()
+      )
 
     g = nodeEnter.append("g").attr("class", "add")
       .style("visibility", "hidden")
