@@ -93,7 +93,7 @@ $( ->
             socket.send(JSON.stringify({
               type: "taskNameChange",
               id: d.id,
-              newTask: this.value
+              newName: this.value
             }))
             container.remove()
           )
@@ -126,12 +126,6 @@ $( ->
         type: "newTask",
         task: task
       }))
-      #newNode( d, {
-      #  type: "task"
-      #  name: "Click",
-      #  color: d.color,
-      #  taskId: maxi
-      #} )
     )
 
     # Transition nodes to their new position.
@@ -242,12 +236,7 @@ $( ->
     }
 
   newNode = (parent, node) ->
-    if parent.children?
-      parent.children.push node
-    else
-      parent.children = [ node ]
-    update parent
-    toggle parent
+
 
   rescaleGraph = ->
     vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
@@ -287,13 +276,28 @@ $( ->
     if event.data.length
       task = JSON.parse(event.data)
       node = d3.select('#task-' + task.id)
+
+      parent = d3.select('#task-' + task.parent).datum()
       if node.node()
         # Copy task attributes to data
         dat = node.datum()
         Object.keys(task).forEach (name) ->
-          unless name in ["id", "id", "children"]
+          unless name in ["id", "children", "project_id"]
             dat[name] = task[name]
-        update d3.select('#task-' + task.parent).datum()
+        parentId = task.parent
       else
-        newNode(d3.select('#task-' + task.parent).datum(), task)
+        # Display all children node when we add this one
+        if parent._children
+          c = parent._children
+        else
+          c = parent.children
+
+        if c?
+          c.push task
+        else
+          parent.children = [ task ]
+
+      update parent
+      # We need to update the tree for collapsed elements
+      update root
 )
