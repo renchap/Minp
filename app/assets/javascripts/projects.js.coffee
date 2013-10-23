@@ -3,11 +3,12 @@ $( ->
   m = [60, 0, 30, 0]
   w = $(window).width() - m[1] - m[3]
   h = $(window).height() - m[0] - m[2]
-  maxi = 0
+  socket = new WebSocket "ws://#{window.location.host + $('.project-graph').data('ws-path')}"
 
   # From http://mbostock.github.io/d3/talk/20111018/tree.html
-  update = (source) ->
+  update = (source, initial = false) ->
     duration = (if d3.event and d3.event.altKey then 5000 else 500)
+    duration = 0 if initial == true
     
     # Compute the new tree layout.
     nodes = tree.nodes(root).reverse()
@@ -17,35 +18,34 @@ $( ->
       d.y = d.depth * 200 - 50
       $.extend(d,
         rightPoint : () -> d.y + d.rightOffset(),
-        rightOffset: () -> d3.select("#task-" + d.taskId).select('text.task-label').node().getComputedTextLength() + 17
+        rightOffset: () ->
+          return 0 if d.type == "project"
+          d3.select("#task-" + d.id)
+            .select('text.task-label').node()
+            .getComputedTextLength() + 17
       )
   
     # Update the nodes…
-    node = vis.selectAll("g.node").data(nodes, (d) ->
-      d.id or d.id = ++maxi
-    )
-    
+    node = vis.selectAll("g.node")
+      .data(nodes.filter((d) -> d.type == "task"), (d) ->
+        "task-" + d.id
+      )
+
     # Enter any new nodes at the parent's previous position.
     nodeEnter = node.enter()
       .append("svg:g")
       .attr("class", "node")
-      .style("visibility", (d) -> "hidden" if d.type == "project")
-      .attr("id", (d) -> "task-" + d.taskId)
+      .attr("id", (d) -> "task-" + d.id)
       .attr("transform", (d) ->
           if source.y0 == source.y
             y = source.rightPoint()
           else
             y = source.y0
           "translate(" + y + "," + source.x0 + ")"
-        )
-      .on("click", (d) ->
-        toggle d
-        update d
       ).on("mouseover", (d) ->
         d3.select(this).select(".add")
           .style("visibility", "visible")
-      )
-      .on("mouseout", (d) ->
+      ).on("mouseout", (d) ->
         d3.select(this).select(".add")
           .style("visibility", "hidden")
       )
@@ -57,6 +57,10 @@ $( ->
         if d._children then d.color else "#fff"
       )
       .style("stroke", (d) -> d.color)
+      .on("click", (d) ->
+        toggle d
+        update d
+      )
 
     nodeEnter
       .append("svg:g")
@@ -83,9 +87,14 @@ $( ->
           .append("xhtml:input")
           .attr("type", "text")
           .attr("value", this.textContent)
-          .on("blur", ->
-            text.text(this.value)
+          .on("blur", (d) ->
+            #text.text(this.value)
             text.style("display", "block")
+            socket.send(JSON.stringify({
+              type: "taskNameChange",
+              id: d.id,
+              newTask: this.value
+            }))
             container.remove()
           )
           .node().focus()
@@ -108,7 +117,21 @@ $( ->
       .attr("y", 4.5*0.85)
 
     g.on("click", (d) ->
-      newNode( d, { name: "Click", color: d.color, taskId: maxi } )
+      task = {
+        parent_id: d.id,
+        name: "Click to edit",
+      }
+
+      socket.send(JSON.stringify({
+        type: "newTask",
+        task: task
+      }))
+      #newNode( d, {
+      #  type: "task"
+      #  name: "Click",
+      #  color: d.color,
+      #  taskId: maxi
+      #} )
     )
 
     # Transition nodes to their new position.
@@ -116,6 +139,12 @@ $( ->
       .transition()
       .duration(duration).attr("transform", (d) ->
         "translate(" + d.y + "," + d.x + ")"
+      )
+
+    nodeUpdate
+      .select('.task-label')
+      .text(
+        (d) -> d.name
       )
 
     nodeUpdate
@@ -142,7 +171,9 @@ $( ->
     nodeExit.select("text").style "fill-opacity", 1e-6
     
     # Update the links…
-    link = vis.selectAll("path.link").data(tree.links(nodes), (d) ->
+    links = tree.links(nodes).filter (d) -> d.source.type == "task"
+
+    link = vis.selectAll("path.link").data(links, (d) ->
       d.target.id
     )
     
@@ -151,7 +182,6 @@ $( ->
       .insert("svg:path", "g")
       .attr("class", "link")
       .style("stroke", (d) -> d.target.color)
-      .style("visibility", (d) -> "hidden" if d.source.type == "project")
       .attr("d", (d) ->
         o =
           x: source.x0
@@ -212,7 +242,6 @@ $( ->
     }
 
   newNode = (parent, node) ->
-    node.id = ++maxi
     if parent.children?
       parent.children.push node
     else
@@ -251,12 +280,20 @@ $( ->
       root = json
       root.x0 = h / 2
       root.y0 = 0
-      update root
+      update root, true
 
-  socket = new WebSocket "ws://#{window.location.host + $('.project-graph').data('ws-path')}"
 
   socket.onmessage = (event) ->
     if event.data.length
       task = JSON.parse(event.data)
-      newNode(d3.select('#task-' + task.parent).datum(), task)
+      node = d3.select('#task-' + task.id)
+      if node.node()
+        # Copy task attributes to data
+        dat = node.datum()
+        Object.keys(task).forEach (name) ->
+          unless name in ["id", "id", "children"]
+            dat[name] = task[name]
+        update d3.select('#task-' + task.parent).datum()
+      else
+        newNode(d3.select('#task-' + task.parent).datum(), task)
 )

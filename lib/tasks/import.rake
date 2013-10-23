@@ -20,7 +20,7 @@ namespace :import do
       end
 
       st['tasks'].each do |task|
-        t = p.tasks.new(name: task['name'])
+        t = p.tasks.new(name: task['name'], project: p)
         add_subtasks(t, task)
         t.save!
       end

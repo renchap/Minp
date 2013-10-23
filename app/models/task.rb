@@ -3,8 +3,12 @@ class Task < ActiveRecord::Base
   belongs_to :parent, :class_name => 'Task'
   has_many :subtasks, :class_name => 'Task', :foreign_key => "parent_id"
 
-  after_save do 
-    Redis.new.publish "project-#{self.project.id}", self.id
+  before_create do
+    self.project_id |= self.parent.project_id if self.parent_id
+  end
+
+  after_commit do 
+    Redis.new.publish "project-#{self.project_id}", self.id
   end
 
   def color
@@ -17,7 +21,7 @@ class Task < ActiveRecord::Base
 
   def array
     result = {
-      'taskId' => self.id,
+      'id' => self.id,
       'color' => self.color,
       'name' => self.name,
       'type' => 'task'

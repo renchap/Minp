@@ -39,9 +39,17 @@ class ProjectsController < ApplicationController
       end
 
       tubesock.onmessage do |m|
-        # pub the message when we get one
-        # note: this echoes through the sub above
-        Redis.new.publish "project-#{@project.id}", m
+        h = JSON.parse(m)
+        case h['type']
+        when 'newTask'
+          Task.create!(h['task'])
+        when 'taskNameChange'
+          t = Task.find(h['id'])
+          t.name = h['newName']
+          t.save!
+        else
+          logger.debug("Unknown message :" + m)
+        end
       end
       
       tubesock.onclose do
