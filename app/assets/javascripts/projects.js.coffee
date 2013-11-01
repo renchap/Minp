@@ -43,8 +43,10 @@ $( ->
             y = source.y0
           "translate(" + y + "," + source.x0 + ")"
       ).on("mouseover", (d) ->
-        d3.select(this).select(".add")
-          .style("visibility", "visible")
+        # Only display the add button if the node is not collapsed
+        unless d._children?
+          d3.select(this).select(".add")
+            .style("visibility", "visible")
       ).on("mouseout", (d) ->
         d3.select(this).select(".add")
           .style("visibility", "hidden")
