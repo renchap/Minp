@@ -24,7 +24,7 @@ $( ->
             .select('text.task-label').node()
             .getComputedTextLength() + 17
       )
-  
+
     # Update the nodes…
     node = vis.selectAll("g.node")
       .data(nodes.filter((d) -> d.type == "task"), (d) ->
@@ -137,20 +137,20 @@ $( ->
         "translate(" + d.y + "," + d.x + ")"
       )
 
-    nodeUpdate
+    node
       .select('.task-label')
       .text(
         (d) -> d.name
       )
 
-    nodeUpdate
+    node
       .select("circle")
       .attr("r", 4.5)
       .style("fill", (d) ->
         if d._children then d.color else "#fff"
       )
   
-    nodeUpdate
+    node
       .select("text")
       .style("fill-opacity", 1)
     
@@ -187,22 +187,22 @@ $( ->
           source: o
           target: o
     ).transition().duration(duration).attr "d", newDiag
-    
+
     # Transition links to their new position.
     link.transition().duration(duration).attr "d", newDiag
-    
+
     # Transition exiting nodes to the parent's new position.
     link.exit().transition().duration(duration).attr("d", (d) ->
       o =
         x: source.x
         y: source.rightPoint()
-  
+
       diagonal
         source: o
         target: o
-  
+
     ).remove()
-    
+
     # Stash the old positions for transition.
     nodes.forEach (d) ->
       d.x0 = d.x
@@ -236,9 +236,6 @@ $( ->
       }
       target: d.target
     }
-
-  newNode = (parent, node) ->
-
 
   rescaleGraph = ->
     vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
