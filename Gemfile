@@ -27,6 +27,10 @@ gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
+gem 'ember-rails'
+gem 'ember-source', '~> 1.1.2'
+gem 'ember_script-rails', :github => 'ghempton/ember-script-rails'
+
 gem 'anjlab-bootstrap-rails', :require => 'bootstrap-rails',
                               :github => 'anjlab/bootstrap-rails'
 gem 'redis'
