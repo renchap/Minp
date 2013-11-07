@@ -1,0 +1,1 @@
+class Minp.ProjectsController extends Ember.ArrayController

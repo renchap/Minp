@@ -49,6 +49,9 @@ GEM
       ember-source
       execjs
       handlebars-source
+    barber-emblem (0.1.1)
+      barber (>= 0.4.1)
+      emblem-source
     better_errors (1.0.1)
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
@@ -72,7 +75,7 @@ GEM
       debugger-ruby_core_source (~> 1.2.3)
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.2.3)
-    ember-data-source (0.14)
+    ember-data-source (1.0.0.beta.3)
       ember-source
     ember-rails (0.14.0)
       active_model_serializers
@@ -90,6 +93,10 @@ GEM
       execjs
       tilt
     ember_script-source (0.0.8)
+    emblem-rails (0.2.0)
+      barber-emblem (~> 0.1.1)
+      ember-rails (>= 0.14.0)
+    emblem-source (0.3.4)
     erubis (2.7.0)
     execjs (2.0.2)
     haml (4.0.3)
@@ -184,9 +191,11 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   color-generator
   debugger
+  ember-data-source (~> 1.0.0.beta)
   ember-rails
   ember-source (~> 1.1.2)
   ember_script-rails!
+  emblem-rails
   haml-rails
   jbuilder (~> 1.2)
   jquery-rails

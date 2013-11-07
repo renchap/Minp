@@ -1,0 +1,28 @@
+#wrap
+  .navbar.navbar-default.navbar-fixed-top
+    .navbar-header
+      button.navbar-toggle type='button' data-toggle='collapse' data-target='.navbar-collapse'
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      
+    .collapse.navbar-collapse
+      ul.nav.navbar-nav
+        li 
+          linkTo 'home' | Home
+        li.dropdown
+          a.dropdown-toggle href='#' data-toggle='dropdown'
+            | Projects
+            b.caret
+          ul.dropdown-menu
+            each project in projects
+              li
+                linkTo 'project' project
+                  = project.name
+  
+  #page-content class='container'
+    = outlet
+#footer
+  .container
+    p.text-muted.powered-by
+      | Powered by <a href="https://github.com/renchap/Minp">Minp</a>.

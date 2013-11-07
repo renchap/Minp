@@ -3,35 +3,8 @@
   %head
     %title= page_title
     %meta{:name => 'viewport', :content => 'width=device-width, initial-scale=1.0'}
-    = stylesheet_link_tag 'application', :media => 'all', "data-turbolinks-track" => true
+    = stylesheet_link_tag 'application', :media => 'all'
     = csrf_meta_tags
   %body
-    #wrap
-      .navbar.navbar-default.navbar-fixed-top
-        .navbar-header
-          %button.navbar-toggle{:type => :button, :data => {:toggle => :collapse, :target => '.navbar-collapse'}}
-            %span.icon-bar
-            %span.icon-bar
-            %span.icon-bar
-          
-        .collapse.navbar-collapse
-          %ul.nav.navbar-nav
-            %li= link_to "Home", :root
-            %li.dropdown
-              %a.dropdown-toggle{:href => '#', :data => {:toggle => :dropdown}}
-                Projects
-                %b.caret
-              %ul.dropdown-menu
-                %li.active
-                  %a{:href => '#'} Project 1
-                %li
-                  %a{:href => '#'} Project 2
-                %li
-                  %a{:href => '#'} Project 3
-      #page-content{:class => layout_type == :fullscreen ? nil : 'container'}
-        = yield
-    #footer
-      .container
-        %p.text-muted.powered-by
-          Powered by <a href="https://github.com/renchap/Minp">Minp</a>.
-  = javascript_include_tag "application", "data-turbolinks-track" => true
+    = yield
+  = javascript_include_tag "application"

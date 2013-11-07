@@ -5,6 +5,11 @@ class ProjectsController < ApplicationController
 
   def index
     @projects = Project.all
+
+    respond_to do |format|
+      format.html
+      format.json { render :json => @projects }
+    end
   end
 
   def show
@@ -18,7 +23,7 @@ class ProjectsController < ApplicationController
           :type => 'project',
           :children => @project.tasks_array
         }
-        render json: struct
+        render json: @project
       end
     end
   end

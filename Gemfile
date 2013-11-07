@@ -29,7 +29,9 @@ gem 'jbuilder', '~> 1.2'
 
 gem 'ember-rails'
 gem 'ember-source', '~> 1.1.2'
+gem "ember-data-source", "~> 1.0.0.beta"
 gem 'ember_script-rails', :github => 'ghempton/ember-script-rails'
+gem 'emblem-rails'
 
 gem 'anjlab-bootstrap-rails', :require => 'bootstrap-rails',
                               :github => 'anjlab/bootstrap-rails'
