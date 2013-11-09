@@ -20,7 +20,7 @@
                 linkTo 'project' project
                   = project.name
   
-  #page-content class='container'
+  #page-content
     = outlet
 #footer
   .container

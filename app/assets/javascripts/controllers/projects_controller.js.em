@@ -1,1 +1,3 @@
 class Minp.ProjectsController extends Ember.ArrayController
+
+class Minp.ProjectController extends Ember.ObjectController

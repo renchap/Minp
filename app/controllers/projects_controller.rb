@@ -23,10 +23,27 @@ class ProjectsController < ApplicationController
           :type => 'project',
           :children => @project.tasks_array
         }
-        render json: @project
+        render json: @project, serializer: ProjectWithTasksSerializer, root: :project
       end
     end
   end
+
+  def test
+    @project = Project.where(id: params[:id]).first
+
+    respond_to do |format|
+      format.html
+      format.json do
+        struct = {
+          :name => @project.name,
+          :type => 'project',
+          :children => @project.tasks_array
+        }
+        render json: struct
+      end
+    end
+  end
+
 
   def stream
     hijack do |tubesock|
