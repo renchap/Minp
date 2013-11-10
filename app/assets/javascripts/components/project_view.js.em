@@ -3,12 +3,9 @@ class Minp.ProjectViewComponent extends Ember.Component
   attributeBindings: ['width', 'height']
   width: ~> $(window).width()
   height: ~> $(window).height() - 110
-  socket: new WebSocket "ws://localhost:3000/projects/2/stream"
   root: undefined
   tree: undefined
   vis: undefined
-  isLoaded: false
-  resizeTimer: undefined
 
   didInsertElement: ->
     t = this
@@ -35,46 +32,18 @@ class Minp.ProjectViewComponent extends Ember.Component
 
     this.vis = outer.append("svg:g")
       .append('svg:g')
-
-    d3.json 'http://192.168.0.10:3000/projects/2/test.json', (json) ->
-      t.root = json
-      t.root.x0 = t.height / 2
-      t.root.y0 = 0
-      Ember.run.once(t, 'update', t.root, true)
-
-    this.socket.onmessage = (event) ->
-      if event.data.length
-        task = JSON.parse(event.data)
-        node = d3.select('#task-' + task.id)
-
-        parent = d3.select('#task-' + task.parent).datum()
-        if node.node()
-          # Copy task attributes to data
-          dat = node.datum()
-          Object.keys(task).forEach (name) ->
-            unless name in ["id", "children", "project_id"]
-              dat[name] = task[name]
-          parentId = task.parent
-        else
-          # Display all children node when we add this one
-          if parent._children
-            c = parent._children
-          else
-            c = parent.children
-
-          if c?
-            c.push task
-          else
-            parent.children = [ task ]
-
-        t.update parent
-        # We need to update the tree for collapsed elements
-        t.update t.root
-
+    this.update(true)
 
   # From http://mbostock.github.io/d3/talk/20111018/tree.html
-  update: (source, initial = false) ->
+  +observer d3data
+  update: (initial = false) ->
     t = this
+
+    console.log t.d3data
+    t.root = t.d3data
+    source = t.root
+    t.root.x0 = t.height / 2
+    t.root.y0 = 0
 
     duration = (if d3.event and d3.event.altKey then 5000 else 500)
     duration = 0 if initial == true
@@ -157,11 +126,7 @@ class Minp.ProjectViewComponent extends Ember.Component
           .on("blur", (d) ->
             #text.text(this.value)
             text.style("display", "block")
-            t.socket.send(JSON.stringify({
-              type: "taskNameChange",
-              id: d.id,
-              newName: this.value
-            }))
+            console.log('task name change')
             container.remove()
           )
           .node().focus()
@@ -189,10 +154,7 @@ class Minp.ProjectViewComponent extends Ember.Component
         name: "Click to edit",
       }
 
-      t.socket.send(JSON.stringify({
-        type: "newTask",
-        task: task
-      }))
+      console.log('new task')
     )
 
     # Transition nodes to their new position.

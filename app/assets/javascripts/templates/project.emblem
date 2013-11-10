@@ -1,1 +1,1 @@
-project-view
+project-view d3data=controller.d3data isLoaded=controller.model.isLoaded

@@ -1,3 +1,6 @@
 class Minp.Project extends DS.Model
   name: DS.attr()
-  tasks: DS.hasMany('task', async: true)
+  root_tasks: DS.hasMany('task')
+  tasks: DS.hasMany('task')
+  rootTasks: ~>
+    this.tasks.filter (task) -> task.parent_id == null
